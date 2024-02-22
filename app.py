@@ -7,11 +7,24 @@ import threading
 import os
 import base64
 import pychromecast
+import sentry_sdk
 
 username = "***REMOVED***"
 api_key = "***REMOVED***"
 spotify_client_id = "***REMOVED***"
 spotify_client_secret = "***REMOVED***"
+
+sentry_sdk.init(
+    dsn="***REMOVED***",
+    # Set traces_sample_rate to 1.0 to capture 100%
+    # of transactions for performance monitoring.
+    traces_sample_rate=1.0,
+    # Set profiles_sample_rate to 1.0 to profile 100%
+    # of sampled transactions.
+    # We recommend adjusting this value in production.
+    profiles_sample_rate=1.0,
+    enable_tracing=True
+)
 
 network = pylast.LastFMNetwork(
     api_key=api_key
@@ -50,6 +63,11 @@ def display_thread():
         print("Checking")
         track = network.get_user(username).get_now_playing()
         if track is not None:
+            artist = track.get_artist().get_name()
+            sentry_sdk.set_context("track", {
+                "track_artist": artist,
+                "track_title": track.title,
+            })
             print(track.artist, "-", track.title)
             image_url = track.get_album().get_cover_image(pylast.SIZE_EXTRA_LARGE)
             if image_url is None:
@@ -58,7 +76,6 @@ def display_thread():
                 }, headers={
                     "Authorization": "Basic " + base64.b64encode((spotify_client_id + ":" + spotify_client_secret).encode()).decode()
                 }).json()["access_token"]
-                artist = track.get_artist().get_name()
                 spotify_track = requests.get("https://api.spotify.com/v1/search", params={
                     "q": "artist:" + artist + " track:" + track.get_title(),
                     "type": "track",
@@ -83,6 +100,10 @@ def display_thread():
                 disp.display(img)
             time.sleep(5)
         else:
+            sentry_sdk.set_context("track", {
+                "artist": "-",
+                "title": "-",
+            })
             print("No track playing")
             albums = network.get_user(username).get_top_albums(pylast.PERIOD_1MONTH, 9)
             collage = Image.new("RGB", (900, 900))
