@@ -121,7 +121,7 @@ def display_thread():
                     }, headers={
                         "Authorization": "Bearer " + spotify_token,
                     }).json()["albums"]["items"][0]
-                    image_url = spotify_album["images"][0]["url"]
+                    image_url = spotify_album["images"][1]["url"]
                 image = requests.get(image_url)
                 art = Image.open(BytesIO(image.content))
                 collage.paste(art, (i % 3 * 300, i // 3 * 300))
