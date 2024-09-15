@@ -115,13 +115,13 @@ def display_thread():
                     }, headers={
                         "Authorization": "Basic " + base64.b64encode((spotify_client_id + ":" + spotify_client_secret).encode()).decode()
                     }).json()["access_token"]
-                    spotify_track = requests.get("https://api.spotify.com/v1/search", params={
+                    spotify_album = requests.get("https://api.spotify.com/v1/search", params={
                         "q": "artist:" + album.item.get_artist().get_name() + " album:" + album.item.get_title(),
                         "type": "album",
                     }, headers={
                         "Authorization": "Bearer " + spotify_token,
-                    }).json()["tracks"]["items"][0]
-                    image_url = spotify_track["album"]["images"][0]["url"]
+                    }).json()["albums"]["items"][0]
+                    image_url = spotify_album["images"][0]["url"]
                 image = requests.get(image_url)
                 art = Image.open(BytesIO(image.content))
                 collage.paste(art, (i % 3 * 300, i // 3 * 300))
