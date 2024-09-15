@@ -81,23 +81,27 @@ def display_thread():
                     "type": "track",
                 }, headers={
                     "Authorization": "Bearer " + spotify_token,
-                }).json()["tracks"]["items"][0]
-                image_url = spotify_track["album"]["images"][0]["url"]
-            image = requests.get(image_url)
-            art = Image.open(BytesIO(image.content))
-            if image_url.endswith(".gif"):
-                if gifname != image_url:
-                    gif = art
-                    gifname = image_url
-                    gt = threading.Thread(target=gif_thread, args=(image_url,))
-                    gt.start()
-            else:
-                gif = 0
-                gifname = ""
-                art = art.resize((240, 240))
-                img = Image.new("RGB", size = (320, 240), color = (0, 0, 0))
-                img.paste(art, (40, 0))
-                disp.display(img)
+                }).json()["tracks"]["items"]
+                if len(spotify_track) == 0:
+                    image_url = None
+                else:
+                    image_url = spotify_track[0]["album"]["images"][0]["url"]
+            if image_url is not None:
+                image = requests.get(image_url)
+                art = Image.open(BytesIO(image.content))
+                if image_url.endswith(".gif"):
+                    if gifname != image_url:
+                        gif = art
+                        gifname = image_url
+                        gt = threading.Thread(target=gif_thread, args=(image_url,))
+                        gt.start()
+                else:
+                    gif = 0
+                    gifname = ""
+                    art = art.resize((240, 240))
+                    img = Image.new("RGB", size = (320, 240), color = (0, 0, 0))
+                    img.paste(art, (40, 0))
+                    disp.display(img)
             time.sleep(5)
         else:
             sentry_sdk.set_context("track", {
@@ -120,11 +124,15 @@ def display_thread():
                         "type": "album",
                     }, headers={
                         "Authorization": "Bearer " + spotify_token,
-                    }).json()["albums"]["items"][0]
-                    image_url = spotify_album["images"][1]["url"]
-                image = requests.get(image_url)
-                art = Image.open(BytesIO(image.content))
-                collage.paste(art, (i % 3 * 300, i // 3 * 300))
+                    }).json()["albums"]["items"]
+                    if len(spotify_album) == 0:
+                        image_url = None
+                    else:
+                        image_url = spotify_album[0]["images"][1]["url"]
+                if image_url is not None:
+                    image = requests.get(image_url)
+                    art = Image.open(BytesIO(image.content))
+                    collage.paste(art, (i % 3 * 300, i // 3 * 300))
             collage = collage.resize((240, 240))
             img = Image.new("RGB", size = (320, 240), color = (0, 0, 0))
             img.paste(collage, (40, 0))
