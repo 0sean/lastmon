@@ -108,7 +108,21 @@ def display_thread():
             albums = network.get_user(username).get_top_albums(pylast.PERIOD_1MONTH, 9)
             collage = Image.new("RGB", (900, 900))
             for i, album in enumerate(albums):
-                image = requests.get(album.item.get_cover_image(pylast.SIZE_EXTRA_LARGE))
+                image_url = album.item.get_cover_image(pylast.SIZE_EXTRA_LARGE)
+                if image_url is None:
+                    spotify_token = requests.post("https://accounts.spotify.com/api/token", data={
+                        "grant_type": "client_credentials",
+                    }, headers={
+                        "Authorization": "Basic " + base64.b64encode((spotify_client_id + ":" + spotify_client_secret).encode()).decode()
+                    }).json()["access_token"]
+                    spotify_track = requests.get("https://api.spotify.com/v1/search", params={
+                        "q": "artist:" + artist + " album:" + album.item.get_title(),
+                        "type": "album",
+                    }, headers={
+                        "Authorization": "Bearer " + spotify_token,
+                    }).json()["tracks"]["items"][0]
+                    image_url = spotify_track["album"]["images"][0]["url"]
+                image = requests.get(image_url)
                 art = Image.open(BytesIO(image.content))
                 collage.paste(art, (i % 3 * 300, i // 3 * 300))
             collage = collage.resize((240, 240))
