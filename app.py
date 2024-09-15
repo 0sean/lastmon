@@ -116,7 +116,7 @@ def display_thread():
                         "Authorization": "Basic " + base64.b64encode((spotify_client_id + ":" + spotify_client_secret).encode()).decode()
                     }).json()["access_token"]
                     spotify_track = requests.get("https://api.spotify.com/v1/search", params={
-                        "q": "artist:" + artist + " album:" + album.item.get_title(),
+                        "q": "artist:" + album.item.get_artist().get_name() + " album:" + album.item.get_title(),
                         "type": "album",
                     }, headers={
                         "Authorization": "Bearer " + spotify_token,
