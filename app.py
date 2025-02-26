@@ -61,83 +61,86 @@ def display_thread():
     global gifname
     while True:
         print("Checking")
-        track = network.get_user(username).get_now_playing()
-        if track is not None:
-            artist = track.get_artist().get_name()
-            sentry_sdk.set_context("track", {
-                "track_artist": artist,
-                "track_title": track.title,
-            })
-            print(track.artist, "-", track.title)
-            image_url = track.get_album().get_cover_image(pylast.SIZE_EXTRA_LARGE)
-            if image_url is None:
-                spotify_token = requests.post("https://accounts.spotify.com/api/token", data={
-                    "grant_type": "client_credentials",
-                }, headers={
-                    "Authorization": "Basic " + base64.b64encode((spotify_client_id + ":" + spotify_client_secret).encode()).decode()
-                }).json()["access_token"]
-                spotify_track = requests.get("https://api.spotify.com/v1/search", params={
-                    "q": "artist:" + artist + " track:" + track.get_title(),
-                    "type": "track",
-                }, headers={
-                    "Authorization": "Bearer " + spotify_token,
-                }).json()["tracks"]["items"]
-                if len(spotify_track) == 0:
-                    image_url = None
-                else:
-                    image_url = spotify_track[0]["album"]["images"][0]["url"]
-            if image_url is not None:
-                image = requests.get(image_url)
-                art = Image.open(BytesIO(image.content))
-                if image_url.endswith(".gif"):
-                    if gifname != image_url:
-                        gif = art
-                        gifname = image_url
-                        gt = threading.Thread(target=gif_thread, args=(image_url,))
-                        gt.start()
-                else:
-                    gif = 0
-                    gifname = ""
-                    art = art.resize((240, 240))
-                    img = Image.new("RGB", size = (320, 240), color = (0, 0, 0))
-                    img.paste(art, (40, 0))
-                    disp.display(img)
-            time.sleep(5)
-        else:
-            sentry_sdk.set_context("track", {
-                "artist": "-",
-                "title": "-",
-            })
-            print("No track playing")
-            albums = network.get_user(username).get_top_albums(pylast.PERIOD_1MONTH, 9)
-            collage = Image.new("RGB", (900, 900))
-            for i, album in enumerate(albums):
-                image_url = album.item.get_cover_image(pylast.SIZE_EXTRA_LARGE)
+        try:
+            track = network.get_user(username).get_now_playing()
+            if track is not None:
+                artist = track.get_artist().get_name()
+                sentry_sdk.set_context("track", {
+                    "track_artist": artist,
+                    "track_title": track.title,
+                })
+                print(track.artist, "-", track.title)
+                image_url = track.get_album().get_cover_image(pylast.SIZE_EXTRA_LARGE)
                 if image_url is None:
                     spotify_token = requests.post("https://accounts.spotify.com/api/token", data={
                         "grant_type": "client_credentials",
                     }, headers={
                         "Authorization": "Basic " + base64.b64encode((spotify_client_id + ":" + spotify_client_secret).encode()).decode()
                     }).json()["access_token"]
-                    spotify_album = requests.get("https://api.spotify.com/v1/search", params={
-                        "q": "artist:" + album.item.get_artist().get_name() + " album:" + album.item.get_title(),
-                        "type": "album",
+                    spotify_track = requests.get("https://api.spotify.com/v1/search", params={
+                        "q": "artist:" + artist + " track:" + track.get_title(),
+                        "type": "track",
                     }, headers={
                         "Authorization": "Bearer " + spotify_token,
-                    }).json()["albums"]["items"]
-                    if len(spotify_album) == 0:
+                    }).json()["tracks"]["items"]
+                    if len(spotify_track) == 0:
                         image_url = None
                     else:
-                        image_url = spotify_album[0]["images"][1]["url"]
+                        image_url = spotify_track[0]["album"]["images"][0]["url"]
                 if image_url is not None:
                     image = requests.get(image_url)
                     art = Image.open(BytesIO(image.content))
-                    collage.paste(art, (i % 3 * 300, i // 3 * 300))
-            collage = collage.resize((240, 240))
-            img = Image.new("RGB", size = (320, 240), color = (0, 0, 0))
-            img.paste(collage, (40, 0))
-            disp.display(img)
-            time.sleep(5)
+                    if image_url.endswith(".gif"):
+                        if gifname != image_url:
+                            gif = art
+                            gifname = image_url
+                            gt = threading.Thread(target=gif_thread, args=(image_url,))
+                            gt.start()
+                    else:
+                        gif = 0
+                        gifname = ""
+                        art = art.resize((240, 240))
+                        img = Image.new("RGB", size = (320, 240), color = (0, 0, 0))
+                        img.paste(art, (40, 0))
+                        disp.display(img)
+                time.sleep(5)
+            else:
+                sentry_sdk.set_context("track", {
+                    "artist": "-",
+                    "title": "-",
+                })
+                print("No track playing")
+                albums = network.get_user(username).get_top_albums(pylast.PERIOD_1MONTH, 9)
+                collage = Image.new("RGB", (900, 900))
+                for i, album in enumerate(albums):
+                    image_url = album.item.get_cover_image(pylast.SIZE_EXTRA_LARGE)
+                    if image_url is None:
+                        spotify_token = requests.post("https://accounts.spotify.com/api/token", data={
+                            "grant_type": "client_credentials",
+                        }, headers={
+                            "Authorization": "Basic " + base64.b64encode((spotify_client_id + ":" + spotify_client_secret).encode()).decode()
+                        }).json()["access_token"]
+                        spotify_album = requests.get("https://api.spotify.com/v1/search", params={
+                            "q": "artist:" + album.item.get_artist().get_name() + " album:" + album.item.get_title(),
+                            "type": "album",
+                        }, headers={
+                            "Authorization": "Bearer " + spotify_token,
+                        }).json()["albums"]["items"]
+                        if len(spotify_album) == 0:
+                            image_url = None
+                        else:
+                            image_url = spotify_album[0]["images"][1]["url"]
+                    if image_url is not None:
+                        image = requests.get(image_url)
+                        art = Image.open(BytesIO(image.content))
+                        collage.paste(art, (i % 3 * 300, i // 3 * 300))
+                collage = collage.resize((240, 240))
+                img = Image.new("RGB", size = (320, 240), color = (0, 0, 0))
+                img.paste(collage, (40, 0))
+                disp.display(img)
+                time.sleep(5)
+        except:
+            print("Error in display thread, trying again")
 
 def button_thread():
     while True:
