@@ -1,5 +1,5 @@
 # 🎧 Lastmon
-<img align="right" width="400" height="283" src="https://github.com/user-attachments/assets/36a79db5-e383-4575-8235-85f7021c500d">
+<img align="right" width="400" height="511" src="https://github.com/user-attachments/assets/de92c5a7-cfb6-4f85-9a46-455bfc080580">
 <h4>Display your now playing/top albums and control your music</h4>
 <ul>
   <li>Connects to your Last.fm account to display your now playing, no matter which device you're on</li>
@@ -8,11 +8,9 @@
   <li>Uses a Raspberry Pi Zero and a <a href="https://shop.pimoroni.com/products/display-hat-mini">Pimoroni Display HAT Mini</a></li>
   <li>Optionally, if your music is playing on a Chromecast-enabled device, control your music with the built-in <br>buttons</li>
 </ul>
-<br>
-<img align="right" width="400" height="239" src="https://github.com/user-attachments/assets/0ac7804b-b353-44b2-bd93-b8625357692e">
 <blockquote>❗ If you're buying a new Pi for this project, you'll probably want to buy one with pre-soldered headers, unless you want to solder them yourself.</blockquote>
 <blockquote>❓ May also work with other ST7789-based 320x240 displays such as <a href="https://www.adafruit.com/product/4311">this one</a></blockquote>
-<br><br>
+<br><br><br>
 
 ## 💿 Setup
 Assuming you have your Pi set up with Python and your Display HAT Mini installed, clone the repository and:
