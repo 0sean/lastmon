@@ -11,7 +11,7 @@
 <br>
 <blockquote>❗ If you're buying a new Pi for this project, you'll probably want to buy one with pre-soldered headers, unless you want to solder them yourself.</blockquote>
 <blockquote>❓ May also work with other ST7789-based 320x240 displays such as <a href="https://www.adafruit.com/product/4311">this one</a></blockquote>
-<br>
+
 
 ## 💿 Setup
 Assuming you have your Pi set up with Python and your Display HAT Mini installed, clone the repository and:
