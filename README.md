@@ -24,3 +24,25 @@ Assuming you have your Pi set up with Python and your Display HAT Mini installed
 
 Once set up, you can run Lastmon by running `python app.py`.
 > **⁉️ You'll probably want to use PM2/a system service/something similar to run Lastmon on startup.**
+
+<blockquote>
+  <details>
+  <summary>License</summary>
+  <br>
+
+    Copyright (C) 2024-2025 0sean
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+</details>
+</blockquote>
